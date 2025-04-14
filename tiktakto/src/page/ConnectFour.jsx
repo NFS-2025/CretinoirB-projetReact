@@ -2,46 +2,39 @@ import React, { useState } from "react";
 import "./ConnectFour.css";
 
 const ConnectFour = () => {
-  // Tableau pour la grille de jeu 6x7, initialement rempli de `null`
   const [board, setBoard] = useState(Array(6).fill(Array(7).fill(null)));
   const [currentPlayer, setCurrentPlayer] = useState("Red");
   const [winner, setWinner] = useState(null);
   const [fallingPiece, setFallingPiece] = useState(null);
 
   const handleMove = (colIndex) => {
-    if (winner) return; // Si quelqu'un a gagné, ne pas permettre de jouer
-
-    // Trouver la première ligne vide (du bas vers le haut)
+    if (winner) return; 
     const rowIndex = getAvailableRow(colIndex);
-    if (rowIndex === -1) return; // Si la colonne est pleine, ne rien faire
+    if (rowIndex === -1) return; 
 
-    // Mettre à jour l'état de la grille avec la nouvelle pièce
     const newBoard = [...board];
     newBoard[rowIndex] = [...newBoard[rowIndex]];
     newBoard[rowIndex][colIndex] = currentPlayer;
 
     setBoard(newBoard);
-    setFallingPiece({ rowIndex, colIndex }); // Définir la pièce qui tombe
+    setFallingPiece({ rowIndex, colIndex }); 
 
-    // Vérifier si quelqu'un a gagné après un délai de 1 seconde (pour l'animation)
     setTimeout(() => {
       checkWinner(newBoard, rowIndex, colIndex);
       setCurrentPlayer(currentPlayer === "Red" ? "Yellow" : "Red");
       setFallingPiece(null);
-    }, 1000); // Attendre l'animation de la pièce
+    }, 1000); 
   };
 
-  // Fonction pour obtenir la première ligne vide d'une colonne donnée
   const getAvailableRow = (colIndex) => {
     for (let rowIndex = 5; rowIndex >= 0; rowIndex--) {
       if (board[rowIndex][colIndex] === null) {
-        return rowIndex; // Retourner la ligne où la pièce peut être placée
+        return rowIndex;
       }
     }
-    return -1; // Si la colonne est pleine, retourner -1
+    return -1; 
   };
 
-  // Fonction pour vérifier si un joueur a gagné après chaque coup
   const checkWinner = (board, row, col) => {
     const directions = [
       [
@@ -98,10 +91,9 @@ const ConnectFour = () => {
         </div>
       )}
       <div className="board">
-        {/* Affichage de la grille avec l'inversion des lignes */}
         {board
           .slice()
-          .reverse() // Inverse l'affichage des lignes
+          .reverse()
           .map((row, rowIndex) => (
             <div key={rowIndex} className="row">
               {row.map((cell, colIndex) => (

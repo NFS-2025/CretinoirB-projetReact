@@ -6,7 +6,7 @@
 
 .connect-four-game .board {
   display: flex;
-  flex-direction: column-reverse; /* Cela permet d'afficher la ligne 0 en bas et la ligne 5 en haut */
+  flex-direction: column-reverse; 
   justify-content: center;
   align-items: center;
   margin-top: 20px;
