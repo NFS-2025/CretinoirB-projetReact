@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./tiktaktoe.css";
+import { Button } from "@mui/material";
 
 const TicTacToe = () => {
   const [board, setBoard] = useState([
@@ -16,6 +17,11 @@ const TicTacToe = () => {
   const [currentPlayer, setCurrentPlayer] = useState("X");
   const [winner, setWinner] = useState(null);
 
+  const resetGame = () => {
+    setBoard([" ", " ", " ", " ", " ", " ", " ", " ", " "]);
+    setCurrentPlayer("X");
+    setWinner(null);
+  };
   const handleMove = (index) => {
     if (board[index] === " " && !winner) {
       const newBoard = [...board];
@@ -62,6 +68,12 @@ const TicTacToe = () => {
           </div>
         ))}
       </div>
+      {winner && (
+        <div className={`status ${winner === "Tie" ? "tie" : ""}`}>
+          {winner === "Tie" ? "Match nul!" : `Le joueur ${winner} gagne!`}
+        </div>
+      )}
+      <Button onClick={resetGame}>Rejouer</Button>
       {winner && (
         <div className={`status ${winner === "Tie" ? "tie" : ""}`}>
           {winner === "Tie" ? "Match nul!" : `Le joueur ${winner} gagne!`}
