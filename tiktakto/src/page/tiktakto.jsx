@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import "./tiktaktoe.css";
 
-function TicTacToe() {
+const TicTacToe = () => {
   const [board, setBoard] = useState([
     " ",
     " ",
@@ -52,7 +53,7 @@ function TicTacToe() {
   };
 
   return (
-    <div className="container">
+    <div className="tic-tac-toe-game">
       <h1>Tic Tac Toe</h1>
       <div className="board">
         {board.map((cell, index) => (
@@ -63,11 +64,11 @@ function TicTacToe() {
       </div>
       {winner && (
         <div className={`status ${winner === "Tie" ? "tie" : ""}`}>
-          {winner === "Tie" ? "It's a tie!" : `Player ${winner} wins!`}
+          {winner === "Tie" ? "Match nul!" : `Le joueur ${winner} gagne!`}
         </div>
       )}
     </div>
   );
-}
+};
 
 export default TicTacToe;

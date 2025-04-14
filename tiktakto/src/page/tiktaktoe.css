@@ -1,0 +1,68 @@
+/* TicTacToe.css */
+.tic-tac-toe-game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fafafa;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    width: 50vh;
+    justify-content: center;
+  }
+  
+  .tic-tac-toe-game h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .tic-tac-toe-game .board {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(80px, 1fr));
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .tic-tac-toe-game .cell {
+    aspect-ratio: 1 / 1;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  
+  .tic-tac-toe-game .cell:hover {
+    background-color: #f0f8ff;
+    transform: scale(1.05);
+  }
+  
+  .tic-tac-toe-game .cell:active {
+    transform: scale(0.95);
+  }
+  
+  .tic-tac-toe-game .status {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #00698f;
+  }
+  
+  .tic-tac-toe-game .status.tie {
+    color: #999;
+  }
+  
+  .tic-tac-toe-game .turn {
+    margin-top: 20px;
+    font-size: 1.2rem;
+  }
+  
+  .tic-tac-toe-game .Yellow {
+    color: yellow;
+  }
+  

@@ -1,17 +1,19 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import TicTacToe from "./page/tiktakto";
+import React from "react";
+import { BrowserRouter as Router } from "react-router-dom"; // Importation de Router
+import Routing from "./page/Routing";
+import Navigation from "./page/navigationBar";
 
-function App() {
-  const [count, setCount] = useState(0);
-
+const App = () => {
   return (
-    <>
-      <TicTacToe />
-    </>
+    <Router>
+      {" "}
+     
+      <div>
+        <Navigation />
+        <Routing />
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;

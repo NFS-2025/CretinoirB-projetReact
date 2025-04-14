@@ -1,0 +1,82 @@
+/* ConnectFour.css */
+.connect-four-game {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.connect-four-game .board {
+  display: flex;
+  flex-direction: column-reverse; /* Cela permet d'afficher la ligne 0 en bas et la ligne 5 en haut */
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  background-color: #808080; 
+  padding: 20px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.connect-four-game .row {
+  display: flex;
+}
+
+.connect-four-game .cell {
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  border-radius: 50%;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+/* Animation de chute */
+.connect-four-game .cell.falling {
+  animation: fall 1s ease-in-out forwards;
+}
+
+.connect-four-game .cell.Red {
+  background-color: red;
+}
+
+.connect-four-game .cell.Yellow {
+  background-color: yellow;
+}
+
+.connect-four-game .cell:hover {
+  opacity: 0.8;
+}
+
+.connect-four-game .status {
+  font-size: 1.5rem;
+  margin-top: 20px;
+}
+
+.connect-four-game .status.tie {
+  color: orange;
+}
+
+.connect-four-game .turn {
+  margin-top: 20px;
+  font-size: 1.2rem;
+}
+
+.connect-four-game .Red {
+  color: red;
+}
+
+.connect-four-game .Yellow {
+  color: yellow;
+}
+@keyframes fall {
+  0% {
+    transform: translateY(-200px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0); 
+    opacity: 1;
+  }
+}
