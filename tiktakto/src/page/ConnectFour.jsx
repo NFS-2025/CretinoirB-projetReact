@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./ConnectFour.css";
+import { Button } from "@mui/material";
 
 const ConnectFour = () => {
   const [board, setBoard] = useState(Array(6).fill(Array(7).fill(null)));
@@ -7,23 +8,29 @@ const ConnectFour = () => {
   const [winner, setWinner] = useState(null);
   const [fallingPiece, setFallingPiece] = useState(null);
 
+  const resetGame = () => {
+    setBoard(Array(6).fill(Array(7).fill(null)));
+    setCurrentPlayer("Red");
+    setWinner(null);
+  };
+
   const handleMove = (colIndex) => {
-    if (winner) return; 
+    if (winner) return;
     const rowIndex = getAvailableRow(colIndex);
-    if (rowIndex === -1) return; 
+    if (rowIndex === -1) return;
 
     const newBoard = [...board];
     newBoard[rowIndex] = [...newBoard[rowIndex]];
     newBoard[rowIndex][colIndex] = currentPlayer;
 
     setBoard(newBoard);
-    setFallingPiece({ rowIndex, colIndex }); 
+    setFallingPiece({ rowIndex, colIndex });
 
     setTimeout(() => {
       checkWinner(newBoard, rowIndex, colIndex);
       setCurrentPlayer(currentPlayer === "Red" ? "Yellow" : "Red");
       setFallingPiece(null);
-    }, 1000); 
+    }, 1000);
   };
 
   const getAvailableRow = (colIndex) => {
@@ -32,7 +39,7 @@ const ConnectFour = () => {
         return rowIndex;
       }
     }
-    return -1; 
+    return -1;
   };
 
   const checkWinner = (board, row, col) => {
@@ -85,6 +92,9 @@ const ConnectFour = () => {
   return (
     <div className="connect-four-game">
       <h1>Puissance 4</h1>
+      <Button variant="contained" onClick={resetGame}>
+        Rejouer
+      </Button>
       {winner && (
         <div className={`status ${winner === "Tie" ? "tie" : ""}`}>
           {winner === "Tie" ? "Match nul!" : `Le joueur ${winner} gagne!`}

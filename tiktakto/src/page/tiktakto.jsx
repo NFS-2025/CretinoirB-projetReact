@@ -73,7 +73,14 @@ const TicTacToe = () => {
           {winner === "Tie" ? "Match nul!" : `Le joueur ${winner} gagne!`}
         </div>
       )}
-      <Button onClick={resetGame}>Rejouer</Button>
+      <Button
+        variant="contained"
+        onClick={resetGame}
+        color="primary"
+        style={{ marginTop: "20px" }}
+      >
+        Rejouer
+      </Button>
       {winner && (
         <div className={`status ${winner === "Tie" ? "tie" : ""}`}>
           {winner === "Tie" ? "Match nul!" : `Le joueur ${winner} gagne!`}
