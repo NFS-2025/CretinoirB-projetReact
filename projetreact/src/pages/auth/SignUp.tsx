@@ -5,6 +5,7 @@ import {
   Box,
   Typography,
   CircularProgress,
+  LinearProgress,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -15,6 +16,15 @@ const SignUp: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [passwordStrength, setPasswordStrength] = useState<number>(0);
+  const [passwordMessage, setPasswordMessage] = useState<string[]>([]);
+  const [regexValidity, setRegexValidity] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    specialChar: false,
+  });
+
   const {
     register,
     handleSubmit,
@@ -24,6 +34,7 @@ const SignUp: React.FC = () => {
 
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
+
   const onSubmit = async (data: any) => {
     setLoading(true);
     setError(null);
@@ -57,6 +68,59 @@ const SignUp: React.FC = () => {
     }
   };
 
+  const checkPasswordStrength = (password: string) => {
+    const lengthCriteria = password.length >= 8;
+    const upperCaseCriteria = /[A-Z]/.test(password);
+    const lowerCaseCriteria = /[a-z]/.test(password);
+    const specialCharCriteria = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    const validityMessages: string[] = [];
+    if (lengthCriteria) validityMessages.push("Longueur suffisante");
+    else
+      validityMessages.push(
+        "Le mot de passe doit contenir au moins 8 caractères"
+      );
+
+    if (upperCaseCriteria) validityMessages.push("Majuscule présente");
+    else validityMessages.push("Une majuscule est requise");
+
+    if (lowerCaseCriteria) validityMessages.push("Minuscule présente");
+    else validityMessages.push("Une minuscule est requise");
+
+    if (specialCharCriteria) validityMessages.push("Caractère spécial présent");
+    else validityMessages.push("Un caractère spécial est requis");
+
+    setPasswordMessage(validityMessages);
+    setPasswordStrength(
+      (lengthCriteria ? 1 : 0) +
+        (upperCaseCriteria ? 1 : 0) +
+        (lowerCaseCriteria ? 1 : 0) +
+        (specialCharCriteria ? 1 : 0)
+    );
+
+    setRegexValidity({
+      length: lengthCriteria,
+      uppercase: upperCaseCriteria,
+      lowercase: lowerCaseCriteria,
+      specialChar: specialCharCriteria,
+    });
+  };
+
+  const getPasswordStrengthText = (strength: number) => {
+    switch (strength) {
+      case 0:
+        return "Très faible";
+      case 1:
+        return "Faible";
+      case 2:
+        return "Moyenne";
+      case 3:
+        return "Forte";
+      default:
+        return "Très forte";
+    }
+  };
+
   return (
     <Box width="100%" maxWidth="400px" mx="auto" mt={10}>
       <Typography variant="h5" gutterBottom>
@@ -70,7 +134,7 @@ const SignUp: React.FC = () => {
           margin="normal"
           {...register("firstName", { required: "Prénom est requis" })}
           error={!!errors.firstName}
-          helperText={String(errors.firstName?.message)}
+          helperText={errors.firstName?.message || ""}
         />
         <TextField
           fullWidth
@@ -78,7 +142,7 @@ const SignUp: React.FC = () => {
           margin="normal"
           {...register("lastName", { required: "Nom est requis" })}
           error={!!errors.lastName}
-          helperText={String(errors.lastName?.message)}
+          helperText={errors.lastName?.message || ""}
         />
         <TextField
           fullWidth
@@ -93,7 +157,7 @@ const SignUp: React.FC = () => {
             },
           })}
           error={!!errors.email}
-          helperText={String(errors.email?.message)}
+          helperText={errors.email?.message || ""}
         />
         <TextField
           fullWidth
@@ -112,9 +176,52 @@ const SignUp: React.FC = () => {
                 "Le mot de passe doit contenir une majuscule, une minuscule et un caractère spécial",
             },
           })}
+          onChange={(e) => checkPasswordStrength(e.target.value)}
           error={!!errors.password}
-          helperText={String(errors.password?.message)}
+          helperText={errors.password?.message || ""}
         />
+        <Box mt={1}>
+          <LinearProgress
+            variant="determinate"
+            value={(passwordStrength / 4) * 100}
+            sx={{
+              height: 5,
+              borderRadius: 2,
+              backgroundColor: "#e0e0e0",
+              "& .MuiLinearProgress-bar": {
+                backgroundColor:
+                  passwordStrength >= 3
+                    ? "green"
+                    : passwordStrength === 2
+                    ? "orange"
+                    : "red",
+              },
+            }}
+          />
+          <Typography variant="body2" color="textSecondary" mt={1}>
+            {getPasswordStrengthText(passwordStrength)}
+          </Typography>
+        </Box>
+
+        <Box mt={2}>
+          {passwordMessage.map((message, index) => (
+            <Typography
+              key={index}
+              variant="body2"
+              color={
+                (message === "Longueur suffisante" && regexValidity.length) ||
+                (message.includes("présente") && regexValidity.uppercase) ||
+                (message.includes("minuscule") && regexValidity.lowercase) ||
+                (message.includes("spécial") && regexValidity.specialChar)
+                  ? "green"
+                  : "red"
+              }
+            >
+              {message}
+            </Typography>
+          ))}
+        </Box>
+
         <TextField
           fullWidth
           label="Confirmer le mot de passe"
@@ -126,7 +233,7 @@ const SignUp: React.FC = () => {
               value === password || "Les mots de passe ne correspondent pas",
           })}
           error={!!errors.confirmPassword}
-          helperText={String(errors.confirmPassword?.message)}
+          helperText={errors.confirmPassword?.message || ""}
         />
 
         <Box mt={2}>
