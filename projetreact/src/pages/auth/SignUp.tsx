@@ -7,51 +7,30 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
 
 const SignUp: React.FC = () => {
   const { login } = useAuth();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null); 
-  const [passwordMatch, setPasswordMatch] = useState<boolean | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm();
 
-  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
+  const onSubmit = async (data: any) => {
     setLoading(true);
     setError(null);
-    setSuccessMessage(null); 
+    setSuccessMessage(null);
 
-    if (password !== confirmPassword) {
+    if (data.password !== data.confirmPassword) {
       setError("Les mots de passe ne correspondent pas.");
-      setLoading(false);
-      return;
-    }
-
-    if (!email || !password || !firstName || !lastName) {
-      setError("Tous les champs doivent être remplis.");
-      setLoading(false);
-      return;
-    }
-
-    if (!emailRegex.test(email)) {
-      setError("Adresse email invalide.");
-      setLoading(false);
-      return;
-    }
-
-    if (!passwordRegex.test(password)) {
-      setError(
-        "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un caractère spécial."
-      );
       setLoading(false);
       return;
     }
@@ -62,12 +41,7 @@ const SignUp: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-        }),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
@@ -83,78 +57,77 @@ const SignUp: React.FC = () => {
     }
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPassword(value);
-    setPasswordMatch(value === confirmPassword);
-  };
-
-  const handleConfirmPasswordChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    setConfirmPassword(value);
-    setPasswordMatch(password === value);
-  };
-
   return (
     <Box width="100%" maxWidth="400px" mx="auto" mt={10}>
       <Typography variant="h5" gutterBottom>
         Inscription
       </Typography>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           fullWidth
           label="Prénom"
           margin="normal"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          required
+          {...register("firstName", { required: "Prénom est requis" })}
+          error={!!errors.firstName}
+          helperText={String(errors.firstName?.message)}
         />
         <TextField
           fullWidth
           label="Nom"
           margin="normal"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          required
+          {...register("lastName", { required: "Nom est requis" })}
+          error={!!errors.lastName}
+          helperText={String(errors.lastName?.message)}
         />
         <TextField
           fullWidth
           label="Email"
           type="email"
           margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          helperText="L'adresse email doit être valide"
+          {...register("email", {
+            required: "Email est requis",
+            pattern: {
+              value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+              message: "Email invalide",
+            },
+          })}
+          error={!!errors.email}
+          helperText={String(errors.email?.message)}
         />
         <TextField
           fullWidth
           label="Mot de passe"
           type="password"
           margin="normal"
-          value={password}
-          onChange={handlePasswordChange}
-          required
-          helperText="Le mot de passe doit contenir 8 caractères, une majuscule, une minuscule et un caractère spécial"
+          {...register("password", {
+            required: "Mot de passe requis",
+            minLength: {
+              value: 8,
+              message: "Le mot de passe doit contenir au moins 8 caractères",
+            },
+            pattern: {
+              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/,
+              message:
+                "Le mot de passe doit contenir une majuscule, une minuscule et un caractère spécial",
+            },
+          })}
+          error={!!errors.password}
+          helperText={String(errors.password?.message)}
         />
         <TextField
           fullWidth
           label="Confirmer le mot de passe"
           type="password"
           margin="normal"
-          value={confirmPassword}
-          onChange={handleConfirmPasswordChange}
-          required
+          {...register("confirmPassword", {
+            required: "La confirmation du mot de passe est requise",
+            validate: (value) =>
+              value === password || "Les mots de passe ne correspondent pas",
+          })}
+          error={!!errors.confirmPassword}
+          helperText={String(errors.confirmPassword?.message)}
         />
-
-        {passwordMatch === false && (
-          <Typography color="error" variant="body2">
-            Les mots de passe ne correspondent pas.
-          </Typography>
-        )}
 
         <Box mt={2}>
           <Button

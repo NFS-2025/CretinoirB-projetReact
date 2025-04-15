@@ -77,7 +77,7 @@ const PokemonCards: React.FC = () => {
   const handlePageChange = async (direction: "next" | "prev") => {
     setIsLoading(true);
     try {
-      await new Promise((res) => setTimeout(res, 400)); // Simule un délai
+      await new Promise((res) => setTimeout(res, 400)); 
       setPage((prevPage) =>
         direction === "next" ? prevPage + 1 : Math.max(prevPage - 1, 1)
       );
@@ -196,10 +196,6 @@ const PokemonCards: React.FC = () => {
                     marginBottom: "16px",
                   }}
                 />
-
-                <Typography variant="body1" gutterBottom>
-                  {selectedCard.description || "Aucune description disponible."}
-                </Typography>
 
                 <Divider sx={{ my: 2 }} />
 

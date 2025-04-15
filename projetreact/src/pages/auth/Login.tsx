@@ -7,18 +7,26 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
+import { useForm, SubmitHandler } from "react-hook-form"; 
 import { useAuth } from "../../context/AuthContext";
+
+type LoginForm = {
+  email: string;
+  password: string;
+};
 
 const Login: React.FC = () => {
   const { login } = useAuth();
-  const navigate = useNavigate(); 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>();
+  const onSubmit: SubmitHandler<LoginForm> = async (data) => {
     setLoading(true);
     setError(null);
 
@@ -28,7 +36,7 @@ const Login: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
@@ -52,24 +60,32 @@ const Login: React.FC = () => {
         Connexion
       </Typography>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           fullWidth
           label="Email"
           type="email"
           margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          {...register("email", {
+            required: "L'email est requis",
+            pattern: {
+              value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+              message: "Adresse email invalide",
+            },
+          })}
+          error={!!errors.email}
+          helperText={errors.email ? errors.email.message : ""}
         />
         <TextField
           fullWidth
           label="Mot de passe"
           type="password"
           margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          {...register("password", {
+            required: "Le mot de passe est requis",
+          })}
+          error={!!errors.password}
+          helperText={errors.password ? errors.password.message : ""}
         />
 
         <Box mt={2}>
