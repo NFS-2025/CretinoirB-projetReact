@@ -1,0 +1,161 @@
+/* Conteneur global de toutes les cartes (Liste) */
+.pokemon-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+/* Carte de la liste Pokémon (avec flip et hover) */
+.card-flip {
+  width: 200px;
+  height: 280px;
+  perspective: 1000px;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s ease;
+}
+
+.card-flip:hover .card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Faces avant et arrière de la carte (Liste) */
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Recto (visible au départ) pour Liste */
+.card-front {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+/* Verso (apparaît après rotation) pour Liste */
+.card-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(to bottom, #eee, #ccc);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+/* Style commun à chaque face (Liste) */
+.pokemon-card {
+  background: linear-gradient(145deg, #f5f5f5, #ddd);
+  border: 3px solid gold;
+  border-radius: 20px;
+  box-shadow: 0 0 10px gold, inset 0 0 10px rgba(255, 215, 0, 0.4);
+  text-align: center;
+  font-family: "Arial", sans-serif;
+  color: #333;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+/* Image du Pokémon (Liste) */
+.pokemon-img {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+/* Nom du Pokémon (Liste) */
+.pokemon-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-transform: capitalize;
+  margin-top: 1rem;
+  background-color: #ffd700;
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
+  box-shadow: inset 0 0 5px #aa8800;
+}
+
+/* Conteneur global du détail Pokémon (Détail) */
+.pokemon-detail-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: #f0f0f0;
+  height: 100vh;
+}
+
+/* Carte du détail Pokémon */
+.pokemon-detail-card {
+  width: 300px;
+  background: #ffffff;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Image du Pokémon (Détail) */
+.pokemon-detail-img {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  margin-bottom: 1rem;
+}
+
+/* Nom du Pokémon (Détail) */
+.pokemon-detail-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: capitalize;
+  margin-bottom: 1rem;
+  color: #333;
+  background-color: #ffd700;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  box-shadow: inset 0 0 5px #aa8800;
+}
+
+/* Détails supplémentaires du Pokémon (Détail) */
+.pokemon-details {
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Détails comme le type, poids, taille (Détail) */
+.pokemon-details p {
+  margin: 0.5rem 0;
+  font-weight: normal;
+}
+
+.pokemon-details strong {
+  font-weight: bold;
+  color: #ff8c00;
+}
