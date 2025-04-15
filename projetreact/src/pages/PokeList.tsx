@@ -7,7 +7,23 @@ import {
   CircularProgress,
   Modal,
   Typography,
+  Fade,
+  Backdrop,
+  Chip,
+  Stack,
+  Divider,
 } from "@mui/material";
+
+interface Attack {
+  name: string;
+  effect: string;
+  damage?: number;
+}
+
+interface Weakness {
+  type: string;
+  value: string;
+}
 
 interface Card {
   id: string;
@@ -17,18 +33,16 @@ interface Card {
   description?: string;
   hp?: number;
   types?: string[];
-  attacks?: { name: string; effect: string; damage?: number }[];
-  weaknesses?: { type: string; value: string }[];
+  attacks?: Attack[];
+  weaknesses?: Weakness[];
   retreat?: number;
 }
 
-const getCardImageUrl = (card: Card) => {
-  return `${card.image}/low.webp`;
-};
+const getCardImageUrl = (card: Card) => `${card.image}/low.webp`;
 
 const PokemonCards: React.FC = () => {
   const [cards, setCards] = useState<Card[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -37,98 +51,99 @@ const PokemonCards: React.FC = () => {
 
   useEffect(() => {
     const fetchCards = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.get(
           `https://api.tcgdex.net/v2/en/cards/?set=base`
         );
         if (response.data && Array.isArray(response.data)) {
           setCards(response.data);
-        } else {
-          console.error("Structure de réponse inattendue:", response);
         }
       } catch (error) {
-        console.error("Erreur lors du chargement des cartes :", error);
+        console.error("Erreur chargement des cartes :", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     fetchCards();
   }, []);
-  const handleNextPage = () => {
-    setPage((prevPage) => prevPage + 1);
-  };
-
-  const handlePrevPage = () => {
-    setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : 1));
-  };
 
   const displayedCards = cards.slice(
     (page - 1) * cardsPerPage,
     page * cardsPerPage
   );
 
-  const handleCardClick = async (card: Card) => {
-    console.log("Carte sélectionnée:", card);
+  const handlePageChange = async (direction: "next" | "prev") => {
+    setIsLoading(true);
+    try {
+      await new Promise((res) => setTimeout(res, 400)); // Simule un délai
+      setPage((prevPage) =>
+        direction === "next" ? prevPage + 1 : Math.max(prevPage - 1, 1)
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  const handleCardClick = async (card: Card) => {
+    setIsLoading(true);
     try {
       const response = await axios.get(
         `https://api.tcgdex.net/v2/en/cards/${card.id}`
       );
-      const detailedCard = response.data;
-
-      setSelectedCard(detailedCard);
-      setOpenModal(true); 
+      setSelectedCard(response.data);
+      setOpenModal(true);
     } catch (error) {
-      console.error(
-        "Erreur lors de la récupération des détails de la carte :",
-        error
-      );
+      console.error("Erreur chargement détails carte :", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false); 
+    setOpenModal(false);
   };
-
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <Box>
+      <Fade in={isLoading} timeout={300} unmountOnExit>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="fixed"
+          top={0}
+          left={0}
+          width="100vw"
+          height="100vh"
+          bgcolor="rgba(0,0,0,0.5)"
+          zIndex={9999}
+        >
+          <CircularProgress color="secondary" size={60} />
+        </Box>
+      </Fade>
       <Grid container spacing={2} justifyContent="center">
         {displayedCards.map((card) => (
           <Grid item xs={12} sm={6} md={3} key={card.id} textAlign="center">
             <img
               src={getCardImageUrl(card)}
               alt={card.name}
-              className="pokemon-card-image"
               style={{
                 width: "100%",
                 maxHeight: "200px",
                 objectFit: "contain",
                 cursor: "pointer",
               }}
-              onClick={() => handleCardClick(card)} 
+              onClick={() => handleCardClick(card)}
             />
             <h3>{card.name}</h3>
           </Grid>
         ))}
       </Grid>
-
       <Box display="flex" justifyContent="center" marginTop={3}>
         <Button
-          onClick={handlePrevPage}
+          onClick={() => handlePageChange("prev")}
           variant="contained"
           color="primary"
           disabled={page === 1}
@@ -136,7 +151,7 @@ const PokemonCards: React.FC = () => {
           Précédent
         </Button>
         <Button
-          onClick={handleNextPage}
+          onClick={() => handlePageChange("next")}
           variant="contained"
           color="primary"
           disabled={page * cardsPerPage >= cards.length}
@@ -145,70 +160,104 @@ const PokemonCards: React.FC = () => {
           Suivant
         </Button>
       </Box>
-
       <Modal
         open={openModal}
         onClose={handleCloseModal}
-        aria-labelledby="modal-card-title"
-        aria-describedby="modal-card-description"
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{ timeout: 300, sx: { bgcolor: "rgba(0,0,0,0.6)" } }}
       >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          {selectedCard && (
-            <>
-              <Typography variant="h6" id="modal-card-title">
-                {selectedCard.name}
-              </Typography>
-              <img
-                src={getCardImageUrl(selectedCard)}
-                alt={selectedCard.name}
-                style={{
-                  width: "100%",
-                  maxHeight: "300px",
-                  objectFit: "contain",
-                }}
-              />
-              <Typography id="modal-card-description" sx={{ mt: 2 }}>
-                {selectedCard.description}
-              </Typography>
-              <Typography sx={{ mt: 2 }}>
-                <strong>HP:</strong> {selectedCard.hp || "Non spécifié"}
-              </Typography>
-              <Typography sx={{ mt: 1 }}>
-                <strong>Types:</strong>{" "}
-                {selectedCard.types?.join(", ") || "Non spécifié"}
-              </Typography>
-              {selectedCard.attacks && (
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1">Attaques:</Typography>
-                  {selectedCard.attacks.map((attack, index) => (
-                    <Box key={index}>
-                      <Typography>
-                        <strong>{attack.name}</strong>
-                      </Typography>
-                      <Typography>{attack.effect}</Typography>
-                      {attack.damage && (
-                        <Typography>
-                          <strong>Damage:</strong> {attack.damage}
-                        </Typography>
-                      )}
+        <Fade in={openModal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 500,
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+              borderRadius: 2,
+            }}
+          >
+            {selectedCard && (
+              <>
+                <Typography variant="h5" gutterBottom>
+                  {selectedCard.name}
+                </Typography>
+                <img
+                  src={getCardImageUrl(selectedCard)}
+                  alt={selectedCard.name}
+                  style={{
+                    width: "100%",
+                    maxHeight: "300px",
+                    objectFit: "contain",
+                    marginBottom: "16px",
+                  }}
+                />
+
+                <Typography variant="body1" gutterBottom>
+                  {selectedCard.description || "Aucune description disponible."}
+                </Typography>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Stack spacing={1}>
+                  {selectedCard.hp && (
+                    <Typography>❤️ PV : {selectedCard.hp}</Typography>
+                  )}
+
+                  {selectedCard.types?.length && (
+                    <Typography>
+                      🔥 Type(s) :{" "}
+                      {selectedCard.types.map((t) => (
+                        <Chip key={t} label={t} size="small" sx={{ mr: 1 }} />
+                      ))}
+                    </Typography>
+                  )}
+
+                  {selectedCard.attacks?.length && (
+                    <Box>
+                      <Typography>🌀 Attaques :</Typography>
+                      {selectedCard.attacks.map((atk, index) => (
+                        <Box key={index} sx={{ ml: 2 }}>
+                          <Typography variant="subtitle2">
+                            - {atk.name}{" "}
+                            {atk.damage ? `(${atk.damage} dégâts)` : ""}
+                          </Typography>
+                          <Typography variant="body2" sx={{ mb: 1 }}>
+                            {atk.effect}
+                          </Typography>
+                        </Box>
+                      ))}
                     </Box>
-                  ))}
-                </Box>
-              )}
-            </>
-          )}
-        </Box>
+                  )}
+
+                  {selectedCard.weaknesses?.length && (
+                    <Box>
+                      <Typography>⚠️ Faiblesses :</Typography>
+                      {selectedCard.weaknesses.map((w, index) => (
+                        <Chip
+                          key={index}
+                          label={`${w.type} (${w.value})`}
+                          size="small"
+                          sx={{ mr: 1 }}
+                        />
+                      ))}
+                    </Box>
+                  )}
+
+                  {typeof selectedCard.retreat === "number" && (
+                    <Typography>
+                      🏃 Coût de retraite : {selectedCard.retreat}
+                    </Typography>
+                  )}
+                </Stack>
+              </>
+            )}
+          </Box>
+        </Fade>
       </Modal>
     </Box>
   );
