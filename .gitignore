@@ -46,3 +46,96 @@ coverage
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build outputs (frontend)
+dist
+dist-ssr
+*.local
+build
+
+# Build outputs (dotnet)
+bin/
+obj/
+out/
+wwwroot/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Testing
+coverage/
+.nyc_output/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python (si jamais tu fais du tooling ou scripts avec)
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ASP.NET / .NET stuff
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider IDE
+.idea/
+*.sln.iml
+
+# EF Core / Migrations (si tu veux ignorer les snapshots)
+# !Tu peux commenter cette ligne si tu veux versionner les migrations
+# Migrations/
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# JetBrains Rider
+.idea/
+
+# Local DBs
+*.mdf
+*.ldf
+
+# Certificates
+*.pfx
+*.p12
+
+# Others
+*.db
+*.sqlite
