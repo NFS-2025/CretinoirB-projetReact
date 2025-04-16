@@ -1,6 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Ajouter CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
@@ -25,17 +24,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 var app = builder.Build();
+app.UseCors("AllowSpecificOrigin");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    app.UseCors("AllowSpecificOrigin");
-
-    // Ajouter Swagger UI
     app.UseSwagger();
     app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "API Backend React v1"); });
-
-    app.UseRouting();
-    app.MapControllers();
 }
+
+app.UseRouting();
+app.MapControllers();
 
 app.Run();
