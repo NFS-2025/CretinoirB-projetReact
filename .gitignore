@@ -139,3 +139,6 @@ _ReSharper*/
 # Others
 *.db
 *.sqlite
+
+# Ignore backend directory
+projetreact/back_end_react/
