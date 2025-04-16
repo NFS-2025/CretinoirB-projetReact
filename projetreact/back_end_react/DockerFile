@@ -1,0 +1,18 @@
+# Utiliser l'image .NET SDK 8 pour la compilation
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copier tout le projet et restaurer les dépendances
+COPY . .
+RUN dotnet restore back_end_react.csproj
+
+# Build et publish
+RUN dotnet publish back_end_react.csproj -c Release -o /app/publish
+
+# Utiliser l'image .NET runtime 8 pour l'exécution
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+
+# Définir le point d'entrée pour l'exécution
+ENTRYPOINT ["dotnet", "back_end_react.dll"]
