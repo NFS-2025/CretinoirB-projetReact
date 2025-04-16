@@ -77,7 +77,7 @@ const PokemonCards: React.FC = () => {
   const handlePageChange = async (direction: "next" | "prev") => {
     setIsLoading(true);
     try {
-      await new Promise((res) => setTimeout(res, 400)); 
+      await new Promise((res) => setTimeout(res, 400));
       setPage((prevPage) =>
         direction === "next" ? prevPage + 1 : Math.max(prevPage - 1, 1)
       );
@@ -125,7 +125,15 @@ const PokemonCards: React.FC = () => {
       </Fade>
       <Grid container spacing={2} justifyContent="center">
         {displayedCards.map((card) => (
-          <Grid item xs={12} sm={6} md={3} key={card.id} textAlign="center">
+          <Grid
+            component="div"
+            item
+            xs={12}
+            sm={6}
+            md={3}
+            key={card.id}
+            textAlign="center"
+          >
             <img
               src={getCardImageUrl(card)}
               alt={card.name}
@@ -196,14 +204,11 @@ const PokemonCards: React.FC = () => {
                     marginBottom: "16px",
                   }}
                 />
-
                 <Divider sx={{ my: 2 }} />
-
                 <Stack spacing={1}>
                   {selectedCard.hp && (
                     <Typography>❤️ PV : {selectedCard.hp}</Typography>
                   )}
-
                   {selectedCard.types?.length && (
                     <Typography>
                       🔥 Type(s) :{" "}
@@ -212,7 +217,6 @@ const PokemonCards: React.FC = () => {
                       ))}
                     </Typography>
                   )}
-
                   {selectedCard.attacks?.length && (
                     <Box>
                       <Typography>🌀 Attaques :</Typography>
@@ -229,7 +233,6 @@ const PokemonCards: React.FC = () => {
                       ))}
                     </Box>
                   )}
-
                   {selectedCard.weaknesses?.length && (
                     <Box>
                       <Typography>⚠️ Faiblesses :</Typography>
@@ -243,7 +246,6 @@ const PokemonCards: React.FC = () => {
                       ))}
                     </Box>
                   )}
-
                   {typeof selectedCard.retreat === "number" && (
                     <Typography>
                       🏃 Coût de retraite : {selectedCard.retreat}

@@ -8,7 +8,7 @@ import {
   LinearProgress,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
 
 const SignUp: React.FC = () => {
@@ -30,12 +30,12 @@ const SignUp: React.FC = () => {
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm();
+  } = useForm<FieldValues>();
 
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
 
-  const onSubmit = async (data: any) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setLoading(true);
     setError(null);
     setSuccessMessage(null);

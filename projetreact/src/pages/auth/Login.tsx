@@ -7,7 +7,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import { useForm, SubmitHandler } from "react-hook-form"; 
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
 
 type LoginForm = {
@@ -26,6 +26,7 @@ const Login: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginForm>();
+
   const onSubmit: SubmitHandler<LoginForm> = async (data) => {
     setLoading(true);
     setError(null);
@@ -43,12 +44,14 @@ const Login: React.FC = () => {
         const errorData = await response.json();
         setError(errorData?.message || "Email ou mot de passe invalide.");
       } else {
-        const data = await response.json();
+        const responseData = await response.json();
+        // Stockage du token ou autre information nécessaire
+        localStorage.setItem("authToken", responseData.token);
         login();
         navigate("/dashboard");
       }
     } catch (err) {
-      setError("Erreur lors de la connexion.");
+      setError("Erreur lors de la connexion. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }
