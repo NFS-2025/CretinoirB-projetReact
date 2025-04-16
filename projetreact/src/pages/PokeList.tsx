@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
-  Grid,
   Button,
   Box,
   CircularProgress,
@@ -123,15 +122,24 @@ const PokemonCards: React.FC = () => {
           <CircularProgress color="secondary" size={60} />
         </Box>
       </Fade>
-      <Grid container spacing={2} justifyContent="center">
+
+      {/* Container pour remplacer Grid container */}
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 2,
+          justifyContent: "center",
+        }}
+      >
         {displayedCards.map((card) => (
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            md={3}
+          <Box
             key={card.id}
-            sx={{ textAlign: "center" }}
+            sx={{
+              width: { xs: "100%", sm: "45%", md: "22%" },
+              textAlign: "center",
+              padding: 1,
+            }}
           >
             <img
               src={getCardImageUrl(card)}
@@ -145,9 +153,10 @@ const PokemonCards: React.FC = () => {
               onClick={() => handleCardClick(card)}
             />
             <h3>{card.name}</h3>
-          </Grid>
+          </Box>
         ))}
-      </Grid>
+      </Box>
+
       <Box display="flex" justifyContent="center" marginTop={3}>
         <Button
           onClick={() => handlePageChange("prev")}
