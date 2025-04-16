@@ -12,7 +12,10 @@ import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
 
 const SignUp: React.FC = () => {
-  const { login } = useAuth();
+  // Suppression de la variable non utilisée login
+  const {
+    /* login */
+  } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -33,7 +36,8 @@ const SignUp: React.FC = () => {
   } = useForm<FieldValues>();
 
   const password = watch("password");
-  const confirmPassword = watch("confirmPassword");
+  // La variable confirmPassword est utilisée dans la validation, même si ce n'est pas explicite
+  // On peut la garder ou la supprimer si on modifie la validation
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setLoading(true);
@@ -134,7 +138,7 @@ const SignUp: React.FC = () => {
           margin="normal"
           {...register("firstName", { required: "Prénom est requis" })}
           error={!!errors.firstName}
-          helperText={errors.firstName?.message || ""}
+          helperText={errors.firstName?.message?.toString() || ""}
         />
         <TextField
           fullWidth
@@ -142,7 +146,7 @@ const SignUp: React.FC = () => {
           margin="normal"
           {...register("lastName", { required: "Nom est requis" })}
           error={!!errors.lastName}
-          helperText={errors.lastName?.message || ""}
+          helperText={errors.lastName?.message?.toString() || ""}
         />
         <TextField
           fullWidth
@@ -157,7 +161,7 @@ const SignUp: React.FC = () => {
             },
           })}
           error={!!errors.email}
-          helperText={errors.email?.message || ""}
+          helperText={errors.email?.message?.toString() || ""}
         />
         <TextField
           fullWidth
@@ -178,7 +182,7 @@ const SignUp: React.FC = () => {
           })}
           onChange={(e) => checkPasswordStrength(e.target.value)}
           error={!!errors.password}
-          helperText={errors.password?.message || ""}
+          helperText={errors.password?.message?.toString() || ""}
         />
         <Box mt={1}>
           <LinearProgress
@@ -233,7 +237,7 @@ const SignUp: React.FC = () => {
               value === password || "Les mots de passe ne correspondent pas",
           })}
           error={!!errors.confirmPassword}
-          helperText={errors.confirmPassword?.message || ""}
+          helperText={errors.confirmPassword?.message?.toString() || ""}
         />
 
         <Box mt={2}>

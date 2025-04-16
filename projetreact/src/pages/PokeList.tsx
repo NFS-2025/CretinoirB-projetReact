@@ -125,15 +125,7 @@ const PokemonCards: React.FC = () => {
       </Fade>
       <Grid container spacing={2} justifyContent="center">
         {displayedCards.map((card) => (
-          <Grid
-            component="div"
-            item
-            xs={12}
-            sm={6}
-            md={3}
-            key={card.id}
-            textAlign="center"
-          >
+          <Grid item xs={12} sm={6} md={3} key={card.id} textAlign="center">
             <img
               src={getCardImageUrl(card)}
               alt={card.name}
