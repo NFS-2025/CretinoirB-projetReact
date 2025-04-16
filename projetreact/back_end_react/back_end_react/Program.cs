@@ -3,8 +3,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAnyOrigin", policy =>
     {
-        policy.AllowAnyOrigin()   
-              .AllowAnyHeader()  
+        policy.AllowAnyOrigin()    
+              .AllowAnyHeader()   
               .AllowAnyMethod();  
     });
 });
@@ -23,6 +23,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 var app = builder.Build();
+
 app.UseCors("AllowAnyOrigin");
 
 if (app.Environment.IsDevelopment())
