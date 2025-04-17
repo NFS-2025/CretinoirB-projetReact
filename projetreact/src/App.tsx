@@ -12,6 +12,7 @@ import PokemonDetail from "./pages/PokemonDetail";
 import Navigation from "./pages/Navigation";
 import PokeList from "./pages/PokeList";
 import PrivateRoute from "./pages/PrivateRoutes";
+import PokemonStartScreen from "./pages/Home"; 
 
 function App() {
   return (
@@ -31,19 +32,17 @@ const AuthRoutes = () => {
       {isAuthenticated && <Navigation />}
 
       <Routes>
-        <Route
-          path="/"
-          element={isAuthenticated ? <Navigate to="/pokemonList" /> : <Login />}
-        />
+        <Route path="/" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route element={<PrivateRoute />}>
+          <Route path="/welcome" element={<PokemonStartScreen />} />
           <Route path="/pokemonList" element={<PokemonList />} />
           <Route path="/pokeList" element={<PokeList />} />
           <Route path="/pokemon/:name" element={<PokemonDetail />} />
         </Route>
         <Route
           path="*"
-          element={<Navigate to={isAuthenticated ? "/pokemonList" : "/"} />}
+          element={<Navigate to={isAuthenticated ? "/welcome" : "/"} />}
         />
       </Routes>
     </>

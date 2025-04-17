@@ -31,6 +31,11 @@ const Login: React.FC = () => {
     setLoading(true);
     setError(null);
 
+    const user = {
+      id: "1",
+      username: data.email,
+    };
+
     try {
       const response = await fetch("http://localhost:5084/api/Auth/login", {
         method: "POST",
@@ -45,9 +50,8 @@ const Login: React.FC = () => {
         setError(errorData?.message || "Email ou mot de passe invalide.");
       } else {
         const responseData = await response.json();
-        // Stockage du token ou autre information nécessaire
         localStorage.setItem("authToken", responseData.token);
-        login();
+        login(user);
         navigate("/dashboard");
       }
     } catch (err) {
