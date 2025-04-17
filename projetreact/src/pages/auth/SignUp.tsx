@@ -51,7 +51,7 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5084/api/Auth/register", {
+      const response = await fetch("https://soothing-enchantment-frontreact.up.railway.app/api/Auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

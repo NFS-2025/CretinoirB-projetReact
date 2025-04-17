@@ -19,8 +19,6 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();  
     });
 });
-
-// Ajout des services nécessaires
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
