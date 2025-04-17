@@ -1,16 +1,15 @@
-using back_end_react.WebApi.Form;                
+using back_end_react.WebApi.Form;                 
 using back_end_react.WebApi.IService;              
-using back_end_react.WebApi.Service;              
+using back_end_react.WebApi.Service;               
 using back_end_react.WebApi.Repository;            
-using back_end_react.WebApi.IRepository;          
-using back_end_react.WebApi.Infrastructure;        
+using back_end_react.WebApi.IRepository;           
+using back_end_react.WebApi.Infrastructure;         
 using Microsoft.AspNetCore.Mvc;                    
-using Microsoft.EntityFrameworkCore;                
-using MySql.EntityFrameworkCore.Extensions;         
+using Microsoft.EntityFrameworkCore;               
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure; 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuration de CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAnyOrigin", policy =>
@@ -27,7 +26,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         "Server=localhost;Database=testdb;User=root;Password=;",
