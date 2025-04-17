@@ -17,7 +17,6 @@ import {
   ThemeProvider,
 } from "@mui/material";
 
-
 interface Attack {
   name: string;
   effect: string;
@@ -60,7 +59,7 @@ const PokemonCards: React.FC = () => {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          `https://api.tcgdex.net/v2/en/cards/?set=base`
+          "https://api.tcgdex.net/v2/en/cards/?set=base"
         );
         if (response.data && Array.isArray(response.data)) {
           setCards(response.data);
@@ -127,7 +126,6 @@ const PokemonCards: React.FC = () => {
     new Set(cards.flatMap((card) => card.types || []))
   ).sort();
 
-  // Theme avec mode sombre
   const theme = createTheme({
     palette: {
       mode: "dark",
@@ -137,7 +135,6 @@ const PokemonCards: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <Box>
-        {/* Loading Spinner */}
         <Fade in={isLoading} timeout={300} unmountOnExit>
           <Box
             display="flex"
@@ -155,7 +152,6 @@ const PokemonCards: React.FC = () => {
           </Box>
         </Fade>
 
-        {/* Search Inputs */}
         <Box
           display="flex"
           justifyContent="center"
@@ -169,9 +165,7 @@ const PokemonCards: React.FC = () => {
             renderInput={(params) => (
               <TextField {...params} label="Recherche par nom" />
             )}
-            onInputChange={(event, newInputValue) =>
-              setSearchTerm(newInputValue)
-            }
+            onInputChange={(_, newInputValue) => setSearchTerm(newInputValue)}
             sx={{ width: "300px", mb: 2 }}
           />
 
@@ -190,7 +184,6 @@ const PokemonCards: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Cards Display */}
         <Box
           sx={{
             display: "flex",
@@ -228,7 +221,6 @@ const PokemonCards: React.FC = () => {
           ))}
         </Box>
 
-        {/* Pagination Buttons */}
         <Box display="flex" justifyContent="center" marginTop={3}>
           <Button
             onClick={() => handlePageChange("prev")}
@@ -249,7 +241,6 @@ const PokemonCards: React.FC = () => {
           </Button>
         </Box>
 
-        {/* Modal for Card Details */}
         <Modal
           open={openModal}
           onClose={handleCloseModal}
