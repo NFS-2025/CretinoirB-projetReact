@@ -20,7 +20,29 @@ import {
   ListItemText,
 } from "@mui/material";
 
-// ... interfaces (Attack, Weakness, Card) inchangées ...
+interface Attack {
+  name: string;
+  effect: string;
+  damage?: number;
+}
+
+interface Weakness {
+  type: string;
+  value: string;
+}
+
+interface Card {
+  id: string;
+  name: string;
+  image: string;
+  set: string;
+  description?: string;
+  hp?: number;
+  types?: string[];
+  attacks?: Attack[];
+  weaknesses?: Weakness[];
+  retreat?: number;
+}
 
 const getCardImageUrl = (card: Card) => `${card.image}/low.webp`;
 
@@ -63,11 +85,9 @@ const PokemonCards: React.FC = () => {
     const nameMatch = card.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-
     const typeMatch =
       selectedTypes.length === 0 ||
       card.types?.some((type) => selectedTypes.includes(type));
-
     return nameMatch && typeMatch;
   });
 
@@ -103,7 +123,9 @@ const PokemonCards: React.FC = () => {
     }
   };
 
-  const handleCloseModal = () => setOpenModal(false);
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
 
   const allTypes = Array.from(
     new Set(cards.flatMap((card) => card.types || []))
@@ -111,7 +133,7 @@ const PokemonCards: React.FC = () => {
 
   return (
     <Box>
-      {/* Spinner */}
+      {/* Loading Spinner */}
       <Fade in={isLoading} timeout={300} unmountOnExit>
         <Box
           display="flex"
@@ -129,21 +151,24 @@ const PokemonCards: React.FC = () => {
         </Box>
       </Fade>
 
-      {/* Search UI */}
-      <Box display="flex" justifyContent="center" my={3} flexDirection="column" alignItems="center">
+      {/* Search Inputs */}
+      <Box
+        display="flex"
+        justifyContent="center"
+        my={3}
+        flexDirection="column"
+        alignItems="center"
+      >
         <TextField
           label="Recherche par nom"
           variant="outlined"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ width: 300, mb: 2 }}
+          sx={{ width: "300px", mb: 2 }}
         />
-        <FormLabel component="legend" sx={{ mb: 1 }}>
-          Filtrer par type(s)
-        </FormLabel>
+        <FormLabel component="legend">Filtrer par type</FormLabel>
         <Select
           multiple
-          displayEmpty
           value={selectedTypes}
           onChange={(e) => setSelectedTypes(e.target.value as string[])}
           input={<OutlinedInput sx={{ width: 300 }} />}
@@ -153,7 +178,7 @@ const PokemonCards: React.FC = () => {
             ) : (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                 {selected.map((value) => (
-                  <Chip key={value} label={value} />
+                  <Chip key={value} label={value} size="small" />
                 ))}
               </Box>
             )
@@ -168,14 +193,33 @@ const PokemonCards: React.FC = () => {
         </Select>
       </Box>
 
-      {/* Cards */}
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, justifyContent: "center" }}>
+      {/* Cards Display */}
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 2,
+          justifyContent: "center",
+        }}
+      >
         {displayedCards.map((card) => (
-          <Box key={card.id} sx={{ width: { xs: "100%", sm: "45%", md: "22%" }, textAlign: "center", padding: 1 }}>
+          <Box
+            key={card.id}
+            sx={{
+              width: { xs: "100%", sm: "45%", md: "22%" },
+              textAlign: "center",
+              padding: 1,
+            }}
+          >
             <img
               src={getCardImageUrl(card)}
               alt={card.name}
-              style={{ width: "100%", maxHeight: "200px", objectFit: "contain", cursor: "pointer" }}
+              style={{
+                width: "100%",
+                maxHeight: "200px",
+                objectFit: "contain",
+                cursor: "pointer",
+              }}
               onClick={() => handleCardClick(card)}
             />
             <h3>{card.name}</h3>
@@ -183,8 +227,8 @@ const PokemonCards: React.FC = () => {
         ))}
       </Box>
 
-      {/* Pagination */}
-      <Box display="flex" justifyContent="center" mt={3}>
+      {/* Pagination Buttons */}
+      <Box display="flex" justifyContent="center" marginTop={3}>
         <Button
           onClick={() => handlePageChange("prev")}
           variant="contained"
@@ -198,13 +242,13 @@ const PokemonCards: React.FC = () => {
           variant="contained"
           color="primary"
           disabled={page * cardsPerPage >= filteredCards.length}
-          sx={{ ml: 2 }}
+          style={{ marginLeft: "16px" }}
         >
           Suivant
         </Button>
       </Box>
 
-      {/* Modal */}
+      {/* Modal for Card Details */}
       <Modal
         open={openModal}
         onClose={handleCloseModal}
