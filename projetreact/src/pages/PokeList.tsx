@@ -12,12 +12,10 @@ import {
   Stack,
   Divider,
   TextField,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
   FormLabel,
-  Select,
-  MenuItem,
-  OutlinedInput,
-  Checkbox,
-  ListItemText,
 } from "@mui/material";
 
 interface Attack {
@@ -53,8 +51,7 @@ const PokemonCards: React.FC = () => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [allTypes, setAllTypes] = useState<string[]>([]);
+  const [selectedType, setSelectedType] = useState<string>("");
 
   const cardsPerPage = 40;
 
@@ -65,8 +62,8 @@ const PokemonCards: React.FC = () => {
         const response = await axios.get(
           `https://api.tcgdex.net/v2/en/cards/?set=base`
         );
-        if (response.data && Array.isArray(response.data.data)) {
-          setCards(response.data.data);
+        if (response.data && Array.isArray(response.data)) {
+          setCards(response.data);
         }
       } catch (error) {
         console.error("Erreur chargement des cartes :", error);
@@ -79,24 +76,14 @@ const PokemonCards: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const newTypes = Array.from(
-      new Set(cards.flatMap((card) => card.types || []))
-    ).sort();
-    setAllTypes(newTypes);
-    console.log("Types disponibles :", newTypes); // Vérification des types
-  }, [cards]);
-
-  useEffect(() => {
     setPage(1);
-  }, [searchTerm, selectedTypes]);
+  }, [searchTerm, selectedType]);
 
   const filteredCards = cards.filter((card) => {
     const nameMatch = card.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    const typeMatch =
-      selectedTypes.length === 0 ||
-      card.types?.some((type) => selectedTypes.includes(type));
+    const typeMatch = selectedType ? card.types?.includes(selectedType) : true;
     return nameMatch && typeMatch;
   });
 
@@ -136,6 +123,10 @@ const PokemonCards: React.FC = () => {
     setOpenModal(false);
   };
 
+  const allTypes = Array.from(
+    new Set(cards.flatMap((card) => card.types || []))
+  ).sort();
+
   return (
     <Box>
       {/* Loading Spinner */}
@@ -172,34 +163,21 @@ const PokemonCards: React.FC = () => {
           sx={{ width: "300px", mb: 2 }}
         />
         <FormLabel component="legend">Filtrer par type</FormLabel>
-        {allTypes.length > 0 ? (
-          <Select
-            multiple
-            value={selectedTypes}
-            onChange={(e) => setSelectedTypes(e.target.value as string[])}
-            input={<OutlinedInput sx={{ width: 300 }} />}
-            renderValue={(selected) =>
-              selected.length === 0 ? (
-                <em>Tous les types</em>
-              ) : (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {selected.map((value) => (
-                    <Chip key={value} label={value} size="small" />
-                  ))}
-                </Box>
-              )
-            }
-          >
-            {allTypes.map((type) => (
-              <MenuItem key={type} value={type}>
-                <Checkbox checked={selectedTypes.includes(type)} />
-                <ListItemText primary={type} />
-              </MenuItem>
-            ))}
-          </Select>
-        ) : (
-          <Typography>Aucun type disponible.</Typography>
-        )}
+        <RadioGroup
+          row
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+        >
+          <FormControlLabel value="" control={<Radio />} label="Tous" />
+          {allTypes.map((type) => (
+            <FormControlLabel
+              key={type}
+              value={type}
+              control={<Radio />}
+              label={type}
+            />
+          ))}
+        </RadioGroup>
       </Box>
 
       {/* Cards Display */}
@@ -211,33 +189,29 @@ const PokemonCards: React.FC = () => {
           justifyContent: "center",
         }}
       >
-        {displayedCards.length === 0 ? (
-          <Typography>Aucune carte ne correspond à vos critères de recherche.</Typography>
-        ) : (
-          displayedCards.map((card) => (
-            <Box
-              key={card.id}
-              sx={{
-                width: { xs: "100%", sm: "45%", md: "22%" },
-                textAlign: "center",
-                padding: 1,
+        {displayedCards.map((card) => (
+          <Box
+            key={card.id}
+            sx={{
+              width: { xs: "100%", sm: "45%", md: "22%" },
+              textAlign: "center",
+              padding: 1,
+            }}
+          >
+            <img
+              src={getCardImageUrl(card)}
+              alt={card.name}
+              style={{
+                width: "100%",
+                maxHeight: "200px",
+                objectFit: "contain",
+                cursor: "pointer",
               }}
-            >
-              <img
-                src={getCardImageUrl(card)}
-                alt={card.name}
-                style={{
-                  width: "100%",
-                  maxHeight: "200px",
-                  objectFit: "contain",
-                  cursor: "pointer",
-                }}
-                onClick={() => handleCardClick(card)}
-              />
-              <h3>{card.name}</h3>
-            </Box>
-          ))
-        )}
+              onClick={() => handleCardClick(card)}
+            />
+            <h3>{card.name}</h3>
+          </Box>
+        ))}
       </Box>
 
       {/* Pagination Buttons */}
