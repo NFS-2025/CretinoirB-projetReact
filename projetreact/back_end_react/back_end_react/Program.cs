@@ -25,10 +25,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        "Server=localhost;Database=testdb;User=root;Password=;",
-        ServerVersion.AutoDetect("Server=localhost;Database=testdb;User=root;Password=;")
-    )
+  options.UseMySql(
+    "Server=yamanote.proxy.rlwy.net;Port=14007;Database=railway;User=root;Password=votreMotDePasse;",
+    ServerVersion.AutoDetect("8.0.0")
+  )
 );
 
 var app = builder.Build();
