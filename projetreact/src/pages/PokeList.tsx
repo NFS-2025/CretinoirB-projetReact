@@ -12,35 +12,15 @@ import {
   Stack,
   Divider,
   TextField,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   FormLabel,
+  Select,
+  MenuItem,
+  OutlinedInput,
+  Checkbox,
+  ListItemText,
 } from "@mui/material";
 
-interface Attack {
-  name: string;
-  effect: string;
-  damage?: number;
-}
-
-interface Weakness {
-  type: string;
-  value: string;
-}
-
-interface Card {
-  id: string;
-  name: string;
-  image: string;
-  set: string;
-  description?: string;
-  hp?: number;
-  types?: string[];
-  attacks?: Attack[];
-  weaknesses?: Weakness[];
-  retreat?: number;
-}
+// ... interfaces (Attack, Weakness, Card) inchangées ...
 
 const getCardImageUrl = (card: Card) => `${card.image}/low.webp`;
 
@@ -51,7 +31,7 @@ const PokemonCards: React.FC = () => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedType, setSelectedType] = useState<string>("");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 
   const cardsPerPage = 40;
 
@@ -77,13 +57,17 @@ const PokemonCards: React.FC = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, selectedType]);
+  }, [searchTerm, selectedTypes]);
 
   const filteredCards = cards.filter((card) => {
     const nameMatch = card.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    const typeMatch = selectedType ? card.types?.includes(selectedType) : true;
+
+    const typeMatch =
+      selectedTypes.length === 0 ||
+      card.types?.some((type) => selectedTypes.includes(type));
+
     return nameMatch && typeMatch;
   });
 
@@ -119,9 +103,7 @@ const PokemonCards: React.FC = () => {
     }
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
+  const handleCloseModal = () => setOpenModal(false);
 
   const allTypes = Array.from(
     new Set(cards.flatMap((card) => card.types || []))
@@ -129,7 +111,7 @@ const PokemonCards: React.FC = () => {
 
   return (
     <Box>
-      {/* Loading Spinner */}
+      {/* Spinner */}
       <Fade in={isLoading} timeout={300} unmountOnExit>
         <Box
           display="flex"
@@ -147,66 +129,53 @@ const PokemonCards: React.FC = () => {
         </Box>
       </Fade>
 
-      {/* Search Inputs */}
-      <Box
-        display="flex"
-        justifyContent="center"
-        my={3}
-        flexDirection="column"
-        alignItems="center"
-      >
+      {/* Search UI */}
+      <Box display="flex" justifyContent="center" my={3} flexDirection="column" alignItems="center">
         <TextField
           label="Recherche par nom"
           variant="outlined"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ width: "300px", mb: 2 }}
+          sx={{ width: 300, mb: 2 }}
         />
-        <FormLabel component="legend">Filtrer par type</FormLabel>
-        <RadioGroup
-          row
-          value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
+        <FormLabel component="legend" sx={{ mb: 1 }}>
+          Filtrer par type(s)
+        </FormLabel>
+        <Select
+          multiple
+          displayEmpty
+          value={selectedTypes}
+          onChange={(e) => setSelectedTypes(e.target.value as string[])}
+          input={<OutlinedInput sx={{ width: 300 }} />}
+          renderValue={(selected) =>
+            selected.length === 0 ? (
+              <em>Tous les types</em>
+            ) : (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                {selected.map((value) => (
+                  <Chip key={value} label={value} />
+                ))}
+              </Box>
+            )
+          }
         >
-          <FormControlLabel value="" control={<Radio />} label="Tous" />
           {allTypes.map((type) => (
-            <FormControlLabel
-              key={type}
-              value={type}
-              control={<Radio />}
-              label={type}
-            />
+            <MenuItem key={type} value={type}>
+              <Checkbox checked={selectedTypes.includes(type)} />
+              <ListItemText primary={type} />
+            </MenuItem>
           ))}
-        </RadioGroup>
+        </Select>
       </Box>
 
-      {/* Cards Display */}
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 2,
-          justifyContent: "center",
-        }}
-      >
+      {/* Cards */}
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, justifyContent: "center" }}>
         {displayedCards.map((card) => (
-          <Box
-            key={card.id}
-            sx={{
-              width: { xs: "100%", sm: "45%", md: "22%" },
-              textAlign: "center",
-              padding: 1,
-            }}
-          >
+          <Box key={card.id} sx={{ width: { xs: "100%", sm: "45%", md: "22%" }, textAlign: "center", padding: 1 }}>
             <img
               src={getCardImageUrl(card)}
               alt={card.name}
-              style={{
-                width: "100%",
-                maxHeight: "200px",
-                objectFit: "contain",
-                cursor: "pointer",
-              }}
+              style={{ width: "100%", maxHeight: "200px", objectFit: "contain", cursor: "pointer" }}
               onClick={() => handleCardClick(card)}
             />
             <h3>{card.name}</h3>
@@ -214,8 +183,8 @@ const PokemonCards: React.FC = () => {
         ))}
       </Box>
 
-      {/* Pagination Buttons */}
-      <Box display="flex" justifyContent="center" marginTop={3}>
+      {/* Pagination */}
+      <Box display="flex" justifyContent="center" mt={3}>
         <Button
           onClick={() => handlePageChange("prev")}
           variant="contained"
@@ -229,13 +198,13 @@ const PokemonCards: React.FC = () => {
           variant="contained"
           color="primary"
           disabled={page * cardsPerPage >= filteredCards.length}
-          style={{ marginLeft: "16px" }}
+          sx={{ ml: 2 }}
         >
           Suivant
         </Button>
       </Box>
 
-      {/* Modal for Card Details */}
+      {/* Modal */}
       <Modal
         open={openModal}
         onClose={handleCloseModal}
