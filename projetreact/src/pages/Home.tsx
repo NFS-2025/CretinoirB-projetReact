@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import type { CSSProperties } from "react";
 
-// Styles intégrés pour s'assurer qu'ils sont appliqués
-const styles = {
+const styles: Record<string, CSSProperties> = {
   container: {
     display: "flex",
     alignItems: "center",
@@ -16,7 +16,7 @@ const styles = {
     position: "relative",
     width: "384px",
     height: "384px",
-    backgroundColor: "#9ae6b4", // vert Game Boy
+    backgroundColor: "#9ae6b4",
     border: "8px solid #4a5568",
     overflow: "hidden",
   },
@@ -39,12 +39,12 @@ const styles = {
   pokemonText: {
     fontSize: "2.25rem",
     fontWeight: "bold",
-    color: "#2b6cb0", // bleu
+    color: "#2b6cb0",
   },
   versionText: {
     fontSize: "1.5rem",
     fontWeight: "bold",
-    color: "#c53030", // rouge
+    color: "#c53030",
   },
   pokemonContainer: {
     display: "flex",
@@ -162,12 +162,10 @@ export default function PokemonStartScreen() {
   const [showOptions, setShowOptions] = useState(false);
   const navigate = useNavigate();
 
-  // Animation du texte "PRESS START"
   useEffect(() => {
     const interval = setInterval(() => {
       setShowPressStart((prev) => !prev);
     }, 800);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -175,7 +173,7 @@ export default function PokemonStartScreen() {
     setShowOptions(true);
   };
 
-  const handleOptionSelect = (option) => {
+  const handleOptionSelect = (option: string) => {
     if (option === "new") {
       navigate("/pokemonList");
     } else if (option === "continue") {
@@ -191,11 +189,9 @@ export default function PokemonStartScreen() {
         tabIndex={0}
         onKeyDown={!showOptions ? handleKeyPress : undefined}
       >
-        {/* Écran principal */}
         <div style={styles.screen}>
           {!showOptions ? (
             <>
-              {/* Logo du jeu */}
               <div style={styles.logo}>
                 <div style={styles.logoContainer}>
                   <h1 style={styles.pokemonText}>POKEMON</h1>
@@ -203,28 +199,24 @@ export default function PokemonStartScreen() {
                 </div>
               </div>
 
-              {/* Pokémon de démarrage */}
               <div style={styles.pokemonContainer}>
                 <div style={styles.pokemonFrame}>
                   <div style={styles.pokemonSilhouette}></div>
                 </div>
               </div>
 
-              {/* Texte clignotant */}
               <div style={styles.pressStartContainer}>
                 {showPressStart && (
                   <p style={styles.pressStartText}>PRESS START</p>
                 )}
               </div>
 
-              {/* Copyright */}
               <div style={styles.copyright}>
                 <p style={styles.copyrightText}>©2025 Fan Project</p>
                 <p style={styles.copyrightText}>Not affiliated with Nintendo</p>
               </div>
             </>
           ) : (
-            /* Menu options */
             <div style={styles.menu}>
               <div
                 style={styles.menuItemActive}
@@ -248,7 +240,6 @@ export default function PokemonStartScreen() {
           )}
         </div>
 
-        {/* Contrôles GameBoy */}
         <div style={styles.controls}>
           <div style={styles.controlButtons}>
             <div style={styles.buttonB}></div>
