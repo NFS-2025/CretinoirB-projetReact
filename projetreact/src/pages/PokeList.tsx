@@ -79,12 +79,12 @@ const PokemonCards: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Recalculer allTypes après le chargement des cartes
     const newTypes = Array.from(
       new Set(cards.flatMap((card) => card.types || []))
     ).sort();
     setAllTypes(newTypes);
-  }, [cards]); // Recalcule allTypes chaque fois que cards est mis à jour
+    console.log("Types disponibles :", newTypes); // Vérification des types
+  }, [cards]);
 
   useEffect(() => {
     setPage(1);
@@ -211,29 +211,33 @@ const PokemonCards: React.FC = () => {
           justifyContent: "center",
         }}
       >
-        {displayedCards.map((card) => (
-          <Box
-            key={card.id}
-            sx={{
-              width: { xs: "100%", sm: "45%", md: "22%" },
-              textAlign: "center",
-              padding: 1,
-            }}
-          >
-            <img
-              src={getCardImageUrl(card)}
-              alt={card.name}
-              style={{
-                width: "100%",
-                maxHeight: "200px",
-                objectFit: "contain",
-                cursor: "pointer",
+        {displayedCards.length === 0 ? (
+          <Typography>Aucune carte ne correspond à vos critères de recherche.</Typography>
+        ) : (
+          displayedCards.map((card) => (
+            <Box
+              key={card.id}
+              sx={{
+                width: { xs: "100%", sm: "45%", md: "22%" },
+                textAlign: "center",
+                padding: 1,
               }}
-              onClick={() => handleCardClick(card)}
-            />
-            <h3>{card.name}</h3>
-          </Box>
-        ))}
+            >
+              <img
+                src={getCardImageUrl(card)}
+                alt={card.name}
+                style={{
+                  width: "100%",
+                  maxHeight: "200px",
+                  objectFit: "contain",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleCardClick(card)}
+              />
+              <h3>{card.name}</h3>
+            </Box>
+          ))
+        )}
       </Box>
 
       {/* Pagination Buttons */}
