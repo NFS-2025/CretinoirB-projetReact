@@ -26,8 +26,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
   options.UseMySql(
-    "Server=yamanote.proxy.rlwy.net;Port=14007;Database=railway;User=root;Password=votreMotDePasse;",
-    ServerVersion.AutoDetect("8.0.0")
+    "Server=yamanote.proxy.rlwy.net;Port=14007;Database=railway;User=root;Password=mceRKioEryRfNkgejyjFvTajvWIpTlYi;",
+    ServerVersion.AutoDetect("Server=yamanote.proxy.rlwy.net;Port=14007;Database=railway;User=root;Password=mceRKioEryRfNkgejyjFvTajvWIpTlYi;")
   )
 );
 
