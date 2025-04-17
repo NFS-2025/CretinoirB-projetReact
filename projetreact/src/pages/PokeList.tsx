@@ -54,6 +54,7 @@ const PokemonCards: React.FC = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [allTypes, setAllTypes] = useState<string[]>([]);
 
   const cardsPerPage = 40;
 
@@ -64,8 +65,8 @@ const PokemonCards: React.FC = () => {
         const response = await axios.get(
           `https://api.tcgdex.net/v2/en/cards/?set=base`
         );
-        if (response.data && Array.isArray(response.data)) {
-          setCards(response.data);
+        if (response.data && Array.isArray(response.data.data)) {
+          setCards(response.data.data);
         }
       } catch (error) {
         console.error("Erreur chargement des cartes :", error);
@@ -76,6 +77,14 @@ const PokemonCards: React.FC = () => {
 
     fetchCards();
   }, []);
+
+  useEffect(() => {
+    // Recalculer allTypes après le chargement des cartes
+    const newTypes = Array.from(
+      new Set(cards.flatMap((card) => card.types || []))
+    ).sort();
+    setAllTypes(newTypes);
+  }, [cards]); // Recalcule allTypes chaque fois que cards est mis à jour
 
   useEffect(() => {
     setPage(1);
@@ -127,10 +136,6 @@ const PokemonCards: React.FC = () => {
     setOpenModal(false);
   };
 
-  const allTypes = Array.from(
-    new Set(cards.flatMap((card) => card.types || []))
-  ).sort();
-
   return (
     <Box>
       {/* Loading Spinner */}
@@ -167,30 +172,34 @@ const PokemonCards: React.FC = () => {
           sx={{ width: "300px", mb: 2 }}
         />
         <FormLabel component="legend">Filtrer par type</FormLabel>
-        <Select
-          multiple
-          value={selectedTypes}
-          onChange={(e) => setSelectedTypes(e.target.value as string[])}
-          input={<OutlinedInput sx={{ width: 300 }} />}
-          renderValue={(selected) =>
-            selected.length === 0 ? (
-              <em>Tous les types</em>
-            ) : (
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} size="small" />
-                ))}
-              </Box>
-            )
-          }
-        >
-          {allTypes.map((type) => (
-            <MenuItem key={type} value={type}>
-              <Checkbox checked={selectedTypes.includes(type)} />
-              <ListItemText primary={type} />
-            </MenuItem>
-          ))}
-        </Select>
+        {allTypes.length > 0 ? (
+          <Select
+            multiple
+            value={selectedTypes}
+            onChange={(e) => setSelectedTypes(e.target.value as string[])}
+            input={<OutlinedInput sx={{ width: 300 }} />}
+            renderValue={(selected) =>
+              selected.length === 0 ? (
+                <em>Tous les types</em>
+              ) : (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} size="small" />
+                  ))}
+                </Box>
+              )
+            }
+          >
+            {allTypes.map((type) => (
+              <MenuItem key={type} value={type}>
+                <Checkbox checked={selectedTypes.includes(type)} />
+                <ListItemText primary={type} />
+              </MenuItem>
+            ))}
+          </Select>
+        ) : (
+          <Typography>Aucun type disponible.</Typography>
+        )}
       </Box>
 
       {/* Cards Display */}
