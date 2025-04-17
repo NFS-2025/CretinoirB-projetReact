@@ -11,6 +11,11 @@ import {
   Chip,
   Stack,
   Divider,
+  TextField,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormLabel,
 } from "@mui/material";
 
 interface Attack {
@@ -45,6 +50,8 @@ const PokemonCards: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedType, setSelectedType] = useState<string>("");
 
   const cardsPerPage = 40;
 
@@ -68,7 +75,19 @@ const PokemonCards: React.FC = () => {
     fetchCards();
   }, []);
 
-  const displayedCards = cards.slice(
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, selectedType]);
+
+  const filteredCards = cards.filter((card) => {
+    const nameMatch = card.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const typeMatch = selectedType ? card.types?.includes(selectedType) : true;
+    return nameMatch && typeMatch;
+  });
+
+  const displayedCards = filteredCards.slice(
     (page - 1) * cardsPerPage,
     page * cardsPerPage
   );
@@ -104,8 +123,13 @@ const PokemonCards: React.FC = () => {
     setOpenModal(false);
   };
 
+  const allTypes = Array.from(
+    new Set(cards.flatMap((card) => card.types || []))
+  ).sort();
+
   return (
     <Box>
+      {/* Loading Spinner */}
       <Fade in={isLoading} timeout={300} unmountOnExit>
         <Box
           display="flex"
@@ -123,7 +147,40 @@ const PokemonCards: React.FC = () => {
         </Box>
       </Fade>
 
-      {/* Container pour remplacer Grid container */}
+      {/* Search Inputs */}
+      <Box
+        display="flex"
+        justifyContent="center"
+        my={3}
+        flexDirection="column"
+        alignItems="center"
+      >
+        <TextField
+          label="Recherche par nom"
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ width: "300px", mb: 2 }}
+        />
+        <FormLabel component="legend">Filtrer par type</FormLabel>
+        <RadioGroup
+          row
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+        >
+          <FormControlLabel value="" control={<Radio />} label="Tous" />
+          {allTypes.map((type) => (
+            <FormControlLabel
+              key={type}
+              value={type}
+              control={<Radio />}
+              label={type}
+            />
+          ))}
+        </RadioGroup>
+      </Box>
+
+      {/* Cards Display */}
       <Box
         sx={{
           display: "flex",
@@ -157,6 +214,7 @@ const PokemonCards: React.FC = () => {
         ))}
       </Box>
 
+      {/* Pagination Buttons */}
       <Box display="flex" justifyContent="center" marginTop={3}>
         <Button
           onClick={() => handlePageChange("prev")}
@@ -170,12 +228,14 @@ const PokemonCards: React.FC = () => {
           onClick={() => handlePageChange("next")}
           variant="contained"
           color="primary"
-          disabled={page * cardsPerPage >= cards.length}
+          disabled={page * cardsPerPage >= filteredCards.length}
           style={{ marginLeft: "16px" }}
         >
           Suivant
         </Button>
       </Box>
+
+      {/* Modal for Card Details */}
       <Modal
         open={openModal}
         onClose={handleCloseModal}
