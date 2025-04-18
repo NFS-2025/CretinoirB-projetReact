@@ -50,8 +50,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
 
   const isAuthenticated = !!currentUser;
-
-  // 5. Fonction login (mémoïsée avec useCallback)
   const login = useCallback((userData: User) => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));

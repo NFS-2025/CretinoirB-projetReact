@@ -1,9 +1,8 @@
-/* Style de la navbar */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ffcb05; /* Couleur inspirée par le jaune Pokémon */
+  background-color: #ffcb05;
   padding: 10px 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   font-family: "Arial", sans-serif;
@@ -12,7 +11,7 @@
 .navbar .logo h2 {
   font-size: 2rem;
   font-weight: bold;
-  color: #ff4d00; /* Couleur inspirée par le rouge du logo Pokémon */
+  color: #ff4d00;
   margin: 0;
   text-transform: uppercase;
 }
@@ -23,6 +22,12 @@
   padding: 0;
   display: flex;
   gap: 20px;
+  align-items: center;
+}
+
+.nav-links li {
+  display: flex;
+  align-items: center; 
 }
 
 .nav-links .nav-link {
@@ -36,11 +41,11 @@
 }
 
 .nav-links .nav-link:hover {
-  background-color: #ff4d00; /* Couleur hover inspirée par le rouge Pokémon */
+  background-color: #ff4d00;
   color: white;
   text-transform: uppercase;
 }
 
 .nav-links .nav-link:active {
-  background-color: #d43f00; /* Effet actif plus foncé */
+  background-color: #d43f00;
 }

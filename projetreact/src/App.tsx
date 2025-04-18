@@ -13,6 +13,7 @@ import Navigation from "./pages/Navigation";
 import PokeList from "./pages/PokeList";
 import PrivateRoute from "./pages/PrivateRoutes";
 import PokemonStartScreen from "./pages/Home"; 
+import Haunter3D from "./pages/Hunter";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ const AuthRoutes = () => {
           <Route path="/pokemonList" element={<PokemonList />} />
           <Route path="/pokeList" element={<PokeList />} />
           <Route path="/pokemon/:name" element={<PokemonDetail />} />
+          <Route path="/options" element={<Haunter3D />} />
         </Route>
         <Route
           path="*"

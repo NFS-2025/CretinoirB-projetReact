@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -12,15 +12,14 @@ import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
 
 const SignUp: React.FC = () => {
-  // Suppression de la variable non utilisée login
   const {
-    /* login */
+    // Auth context (à compléter si besoin)
   } = useAuth();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [passwordStrength, setPasswordStrength] = useState<number>(0);
-  const [passwordMessage, setPasswordMessage] = useState<string[]>([]);
   const [regexValidity, setRegexValidity] = useState({
     length: false,
     uppercase: false,
@@ -33,11 +32,16 @@ const SignUp: React.FC = () => {
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<FieldValues>();
+    trigger,
+  } = useForm<FieldValues>({
+    shouldUnregister: true,
+  });
 
   const password = watch("password");
-  // La variable confirmPassword est utilisée dans la validation, même si ce n'est pas explicite
-  // On peut la garder ou la supprimer si on modifie la validation
+
+  useEffect(() => {
+    trigger("confirmPassword");
+  }, [password, trigger]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setLoading(true);
@@ -51,13 +55,16 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      const response = await fetch("https://soothing-enchantment-frontreact.up.railway.app/api/Auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        "https://soothing-enchantment-frontreact.up.railway.app/api/Auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -78,23 +85,6 @@ const SignUp: React.FC = () => {
     const lowerCaseCriteria = /[a-z]/.test(password);
     const specialCharCriteria = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-    const validityMessages: string[] = [];
-    if (lengthCriteria) validityMessages.push("Longueur suffisante");
-    else
-      validityMessages.push(
-        "Le mot de passe doit contenir au moins 8 caractères"
-      );
-
-    if (upperCaseCriteria) validityMessages.push("Majuscule présente");
-    else validityMessages.push("Une majuscule est requise");
-
-    if (lowerCaseCriteria) validityMessages.push("Minuscule présente");
-    else validityMessages.push("Une minuscule est requise");
-
-    if (specialCharCriteria) validityMessages.push("Caractère spécial présent");
-    else validityMessages.push("Un caractère spécial est requis");
-
-    setPasswordMessage(validityMessages);
     setPasswordStrength(
       (lengthCriteria ? 1 : 0) +
         (upperCaseCriteria ? 1 : 0) +
@@ -184,6 +174,7 @@ const SignUp: React.FC = () => {
           error={!!errors.password}
           helperText={errors.password?.message?.toString() || ""}
         />
+
         <Box mt={1}>
           <LinearProgress
             variant="determinate"
@@ -208,20 +199,34 @@ const SignUp: React.FC = () => {
         </Box>
 
         <Box mt={2}>
-          {passwordMessage.map((message, index) => (
+          {[
+            {
+              label: "Le mot de passe doit contenir au moins 8 caractères",
+              successLabel: "Longueur suffisante",
+              isValid: regexValidity.length,
+            },
+            {
+              label: "Une majuscule est requise",
+              successLabel: "Majuscule présente",
+              isValid: regexValidity.uppercase,
+            },
+            {
+              label: "Une minuscule est requise",
+              successLabel: "Minuscule présente",
+              isValid: regexValidity.lowercase,
+            },
+            {
+              label: "Un caractère spécial est requis",
+              successLabel: "Caractère spécial présent",
+              isValid: regexValidity.specialChar,
+            },
+          ].map((item, index) => (
             <Typography
               key={index}
               variant="body2"
-              color={
-                (message === "Longueur suffisante" && regexValidity.length) ||
-                (message.includes("présente") && regexValidity.uppercase) ||
-                (message.includes("minuscule") && regexValidity.lowercase) ||
-                (message.includes("spécial") && regexValidity.specialChar)
-                  ? "green"
-                  : "red"
-              }
+              color={item.isValid ? "green" : "red"}
             >
-              {message}
+              {item.isValid ? item.successLabel : item.label}
             </Typography>
           ))}
         </Box>

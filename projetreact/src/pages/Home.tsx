@@ -178,6 +178,8 @@ export default function PokemonStartScreen() {
       navigate("/pokemonList");
     } else if (option === "continue") {
       navigate("/pokeList");
+    } else if (option === "options") {
+      navigate("/options");
     }
   };
 
@@ -232,7 +234,10 @@ export default function PokemonStartScreen() {
                 <div style={styles.menuSquareInactive}></div>
                 <p style={styles.menuText}>CONTINUER</p>
               </div>
-              <div style={styles.menuItem}>
+              <div
+                style={styles.menuItem}
+                onClick={() => handleOptionSelect("options")}
+              >
                 <div style={styles.menuSquareInactive}></div>
                 <p style={styles.menuText}>OPTIONS</p>
               </div>
